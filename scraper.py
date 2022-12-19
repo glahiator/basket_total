@@ -51,10 +51,22 @@ class BasketScraper(object):
         self.url = f"https://www.flashscore.ru.com/match/{m_id}"
         self.browser.get(self.url)
         self.browser.set_page_load_timeout(3) 
-        # time.sleep(2) 
+        time.sleep(3) 
         generated_html = self.browser.page_source
         soup = BeautifulSoup(generated_html, 'lxml') 
         self.verbose = False 
+        self.date = ""
+        self.home = {}
+        self.away = {}
+        self.score = ""
+        self.quater = { 1 : "", 2 : "", 3 : "", 4 : "", 5 : "" }
+        self.all_odds = {            
+            "home" : "",
+            "away" : "",            
+            "total" : [],
+            "gandicap" : []
+        }
+
         self.__get_duel( soup.find('div', class_ = "duelParticipant"))
         self.__get_score(soup.find('div', class_ = "smh__template" ))
         self.__get_stats(soup.find('div', class_ = "tabs__detail"))
