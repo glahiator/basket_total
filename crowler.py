@@ -30,15 +30,38 @@ def scrap_match_info_from_file(  ) -> None:
         json.dump(match_scrap , fp,  indent=4, ensure_ascii=False) 
     print(f"{ok} Scraped {len(match_scrap)} matches.")
 
+def scrap_shedule_matches( ):
+    scrap = BasketScraper()
+    matches = scrap.shedule_matches()
+    print(f"{ok} Load {len(matches)} matches.\nStart parsing...")
+    match_scrap = []
+    index = 1
+    for m in matches:
+        try:
+            mm = scrap.shed_match_info(m)
+            print(f"{index} / {len(matches)}")
+            index += 1
+            match_scrap.append(mm)
+        except Exception as e:
+            print(f"{warn}{warn}{warn}{warn}{warn}{warn}\nError {m} id")
+            print(e)
+        
+    with open(f"matches_sched.json", "w", newline='', encoding='utf-8') as fp:
+        json.dump(match_scrap , fp,  indent=4, ensure_ascii=False) 
+    print(f"{ok} Scraped {len(match_scrap)} matches.")
+
 def main(args):    
     if args.mode == "matches":
         scrap_match_info_from_file( )
-    if args.mode == "results" :
-        scrap_all_matches_id_from_results()     
+    elif args.mode == "results" :
+        scrap_all_matches_id_from_results()  
+    elif args.mode == "shedule":
+        scrap_shedule_matches()
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Scrapper modes select.')
-    parser.add_argument('mode', choices=['matches', "results"])
+    parser.add_argument('mode', choices=['matches', "results", "shedule"])
     args = parser.parse_args()       
     main(args)
     print("Finish")

@@ -46,7 +46,6 @@ class BasketScraper(object):
                 return all_matches                   
             else:
                 prev_count = current_count
-
     def match_info(self, m_id) -> dict:
         self.url = f"https://www.flashscore.ru.com/match/{m_id}"
         self.browser.get(self.url)
@@ -81,7 +80,59 @@ class BasketScraper(object):
             "odds" : self.all_odds,
         }
         return result
+
+    def shedule_matches(self):
+        all_matches = []
+        self.url = f"https://www.flashscore.ru.com/basketball/usa/nba/fixtures/"
+        self.browser.get(self.url)
+        self.browser.set_page_load_timeout(3) 
+        time.sleep(5) 
+        generated_html = self.browser.page_source
+        soup = BeautifulSoup(generated_html, 'lxml') 
+        matches = soup.find_all('div', title="Подробности матча!")
+        for m in matches:
+            all_matches.append(m.get('id')[4:] )
+        return all_matches
+    def shed_match_info(self, m_id) ->dict:
+        self.url = f"https://www.flashscore.ru.com/match/{m_id}"
+        self.browser.get(self.url)
+        self.browser.set_page_load_timeout(3) 
+        time.sleep(3) 
+        generated_html = self.browser.page_source
+        soup = BeautifulSoup(generated_html, 'lxml') 
+        self.verbose = False              
+        self.all_odds = {            
+            "home" : "",
+            "away" : "",            
+            "total" : [],
+            "gandicap" : []
+        }
+
+        names_div = soup.find('div', class_ = "duelParticipant")
+        if names_div is None:
+            return
+        date_el = names_div.find('div', class_ = "duelParticipant__startTime")
+        date = date_el.find('div').get_text()
+
+        pl1_el = names_div.find('div', class_ = "duelParticipant__home")
+        pl1_div = pl1_el.find('div', class_='participant__participantName')
+        pl1_name = pl1_div.find('a').get_text()
+
+        pl2_el = names_div.find('div', class_ = "duelParticipant__away")
+        pl2_div = pl2_el.find('div', class_='participant__participantName')
+        pl2_name = pl2_div.find('a').get_text()
+
+        self.__get_stats(soup.find('div', class_ = "tabs__detail"))
         
+        result = {
+            "id" : m_id,
+            "date" : date,
+            "home" : pl1_name,
+            "away" : pl2_name,
+            "odds" : self.all_odds,
+        }
+        return result
+
     def __get_duel(self, duel_div : BeautifulSoup):
         if duel_div is None:
             return
