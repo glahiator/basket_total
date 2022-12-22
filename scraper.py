@@ -55,8 +55,8 @@ class BasketScraper(object):
         soup = BeautifulSoup(generated_html, 'lxml') 
         self.verbose = False 
         self.date = ""
-        self.home = {}
-        self.away = {}
+        self.home = ""
+        self.away = ""
         self.score = ""
         self.quater = { 1 : "", 2 : "", 3 : "", 4 : "", 5 : "" }
         self.all_odds = {            
@@ -68,7 +68,7 @@ class BasketScraper(object):
 
         self.__get_duel( soup.find('div', class_ = "duelParticipant"))
         self.__get_score(soup.find('div', class_ = "smh__template" ))
-        self.__get_stats(soup.find('div', class_ = "tabs__detail"))
+        self.__get_odds(soup.find('div', class_ = "tabs__detail"))
         
         result = {
             "id" : m_id,
@@ -81,7 +81,7 @@ class BasketScraper(object):
         }
         return result
 
-    def shedule_matches(self):
+    def fixture_matches(self):
         all_matches = []
         self.url = f"https://www.flashscore.ru.com/basketball/usa/nba/fixtures/"
         self.browser.get(self.url)
@@ -93,7 +93,7 @@ class BasketScraper(object):
         for m in matches:
             all_matches.append(m.get('id')[4:] )
         return all_matches
-    def shed_match_info(self, m_id) ->dict:
+    def today_match_info(self, m_id) ->dict:
         self.url = f"https://www.flashscore.ru.com/match/{m_id}"
         self.browser.get(self.url)
         self.browser.set_page_load_timeout(3) 
@@ -122,7 +122,7 @@ class BasketScraper(object):
         pl2_div = pl2_el.find('div', class_='participant__participantName')
         pl2_name = pl2_div.find('a').get_text()
 
-        self.__get_stats(soup.find('div', class_ = "tabs__detail"))
+        self.__get_odds(soup.find('div', class_ = "tabs__detail"))
         
         result = {
             "id" : m_id,
@@ -161,16 +161,18 @@ class BasketScraper(object):
 
         self.date = date
         self.status = match_status
-        self.home = {
-            "name" : pl1_name,
-            "url"  : pl1_link,
-            "id"   : pl1_link.split("/")[-1]
-        }
-        self.away = {
-            "name" : pl2_name,
-            "url"  : pl2_link,
-            "id"   : pl2_link.split("/")[-1]
-        }
+        # self.home = {
+        #     "name" : pl1_name,
+        #     "url"  : pl1_link,
+        #     "id"   : pl1_link.split("/")[-1]
+        # }
+        # self.away = {
+        #     "name" : pl2_name,
+        #     "url"  : pl2_link,
+        #     "id"   : pl2_link.split("/")[-1]
+        # }
+        self.home = pl1_name
+        self.away = pl2_name
     def __get_score(self, score_div : BeautifulSoup):
         if score_div is None:
             return
@@ -201,7 +203,7 @@ class BasketScraper(object):
         else:
             if self.verbose:
                 print(f"Not find match score")
-    def __get_stats(self, get_stats_div : BeautifulSoup):
+    def __get_odds(self, get_stats_div : BeautifulSoup):
         self.all_odds = {            
             "home" : "",
             "away" : "",            
@@ -239,9 +241,14 @@ class BasketScraper(object):
                     over_under = r.find_all('a', class_ = "oddsCell__odd")
                     over = over_under[0].get_text()
                     under = over_under[1].get_text()
-                    self.all_odds["total"].append([ttl, over, under])
                     if self.verbose:
                         print(f"Total odd: {ttl} : {over} {under}")
+                    if float( over ) < 1.97  and float( under ) < 2.0 :
+                        self.all_odds["total"] = [ttl, over, under]
+                        break
+                    else:
+                        self.all_odds["total"].append([ttl, over, under])
+                    
 
                 url_total_odds = self.url + "#/odds-comparison/asian-handicap/full-time"
                 self.browser.get(url_total_odds)
@@ -254,10 +261,14 @@ class BasketScraper(object):
                     over_under = r.find_all('a', class_ = "oddsCell__odd")
                     over = over_under[0].get_text()
                     under = over_under[1].get_text()
-                    self.all_odds["gandicap"].append([ttl, over, under])
                     if self.verbose:
                         print(f"Gandicap odd: {ttl} : {over} {under}")
-                
+                    if float( over ) < 1.97  and float( under ) < 2.0 :
+                        self.all_odds["gandicap"] = [ttl, over, under]
+                        break
+                    else:
+                        self.all_odds["gandicap"].append([ttl, over, under])
+                    
 
 if __name__ == "__main__":
     pass

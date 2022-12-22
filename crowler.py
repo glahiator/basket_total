@@ -1,6 +1,7 @@
 import argparse, json
 from utilits import *
 from scraper import BasketScraper
+from storage import Storage
 
 def scrap_all_matches_id_from_results( ) -> None:
     scrap = BasketScraper()
@@ -32,13 +33,13 @@ def scrap_match_info_from_file(  ) -> None:
 
 def scrap_shedule_matches( ):
     scrap = BasketScraper()
-    matches = scrap.shedule_matches()
+    matches = scrap.fixture_matches()
     print(f"{ok} Load {len(matches)} matches.\nStart parsing...")
     match_scrap = []
     index = 1
     for m in matches:
         try:
-            mm = scrap.shed_match_info(m)
+            mm = scrap.today_match_info(m)
             print(f"{index} / {len(matches)}")
             index += 1
             match_scrap.append(mm)
@@ -50,13 +51,52 @@ def scrap_shedule_matches( ):
         json.dump(match_scrap , fp,  indent=4, ensure_ascii=False) 
     print(f"{ok} Scraped {len(match_scrap)} matches.")
 
+def get_lifecycle():
+    keeper = Storage()
+    # keeper.update_fixtures()
+    # keeper.get_today()
+    # keeper.update_today()
+    keeper.transit_to_results()
+
+def convert():
+    old_matches = []
+    with open(f"matches.json", "r", newline='', encoding='utf-8') as fp:
+        old_matches = json.load(fp)
+    print(f"{ok} Load {len(old_matches)} matches.")
+    new_matches = []
+    for ind, m in enumerate( old_matches, start=1 ):
+        m_new = {}
+        for k,v in m.items():
+            if k in ["home", "away"]:
+                m_new[k] = v["name"]
+            if k in [ "id", "date"]:
+                m_new[k] = v
+            elif k == "odds":
+                m_new["odd_h"] = v["home"]
+                m_new["odd_a"] = v["away"]
+                for t in  m[k]['total']:
+                    if float(t[1]) < 1.97  and float( t[2] ) < 2.0:
+                        m_new['total'] = t[0] 
+                for t in  m[k]['gandicap']:
+                    if float(t[1]) < 1.97  and float( t[2] ) < 2.0:
+                        m_new['gandicap'] = t[0] 
+            elif k in ["score", "quarters"]:
+                m_new[k] = v
+        print( f"{ind}/{len(old_matches)}")
+        new_matches.append(m_new)
+    with open(f"results.json", "w", newline='', encoding='utf-8') as fp:
+        json.dump(new_matches , fp,  indent=4, ensure_ascii=False)         
+    print(f"{ok} Save {len(new_matches)} matches.")
+
+
 def main(args):    
     if args.mode == "matches":
         scrap_match_info_from_file( )
     elif args.mode == "results" :
         scrap_all_matches_id_from_results()  
     elif args.mode == "shedule":
-        scrap_shedule_matches()
+        get_lifecycle()
+        # convert()
 
 
 if __name__ == "__main__":
