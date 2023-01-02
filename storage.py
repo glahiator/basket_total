@@ -18,12 +18,16 @@ class Storage():
         for m in matches:
             try:
                 next_match = self.scrap.today_match_info(m)
-                match_date =  pd.to_datetime(next_match['date'])
+                # match_date =  pd.to_datetime(next_match['date'],dayfirst=True)
+                match_date = next_match['date']
                 search_date =  datetime.datetime.now() + datetime.timedelta(days=1)
-                if match_date > search_date:
+                past_date =  datetime.datetime.now() 
+                if match_date > search_date :
                     break
                 print(f"{index+1}")
                 index += 1  
+                if match_date < past_date: 
+                    continue
                 today_matches.append( self.__prepare_info(next_match) )
             except Exception as e:
                 print(f"{warn}{warn}{warn}{warn}{warn}{warn}\nError {m} id")

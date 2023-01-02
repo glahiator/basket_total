@@ -1,4 +1,6 @@
+import datetime
 import time
+import pandas as pd
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoSuchElementException
@@ -113,6 +115,9 @@ class BasketScraper(object):
             return
         date_el = names_div.find('div', class_ = "duelParticipant__startTime")
         date = date_el.find('div').get_text()
+        date =  str( pd.to_datetime(date,dayfirst=True) )
+        # date = datetime.datetime.strptime(date, '%d.%m.%Y')
+        
 
         pl1_el = names_div.find('div', class_ = "duelParticipant__home")
         pl1_div = pl1_el.find('div', class_='participant__participantName')
@@ -138,6 +143,7 @@ class BasketScraper(object):
             return
         date_el = duel_div.find('div', class_ = "duelParticipant__startTime")
         date = date_el.find('div').get_text()
+        date = str( pd.to_datetime(date,dayfirst=True) )
 
         pl1_el = duel_div.find('div', class_ = "duelParticipant__home")
         pl1_div = pl1_el.find('div', class_='participant__participantName')
