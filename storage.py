@@ -19,7 +19,7 @@ class Storage():
             try:
                 next_match = self.scrap.today_match_info(m)
                 # match_date =  pd.to_datetime(next_match['date'],dayfirst=True)
-                match_date = next_match['date']
+                match_date = pd.to_datetime(next_match['date'],dayfirst=True)
                 search_date =  datetime.datetime.now() + datetime.timedelta(days=1)
                 past_date =  datetime.datetime.now() 
                 if match_date > search_date :

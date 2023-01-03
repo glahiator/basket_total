@@ -61,29 +61,26 @@ def get_lifecycle():
 
 def convert():
     old_matches = []
-    with open(f"matches.json", "r", newline='', encoding='utf-8') as fp:
+    with open(f"matches_new.json", "r", newline='', encoding='utf-8') as fp:
         old_matches = json.load(fp)
     print(f"{ok} Load {len(old_matches)} matches.")
     new_matches = []
     for ind, m in enumerate( old_matches, start=1 ):
         m_new = {}
         for k,v in m.items():
+            
             if k in ["home", "away"]:
-                m_new[k] = v["name"]
+                m_new[k] = v
             if k in [ "id", "date"]:
                 m_new[k] = v
             elif k == "odds":
                 m_new["odd_h"] = v["home"]
                 m_new["odd_a"] = v["away"]
-                for t in  m[k]['total']:
-                    if float(t[1]) < 1.97  and float( t[2] ) < 2.0:
-                        m_new['total'] = t[0] 
-                for t in  m[k]['gandicap']:
-                    if float(t[1]) < 1.97  and float( t[2] ) < 2.0:
-                        m_new['gandicap'] = t[0] 
+                m_new['total'] = v["total"][0]
+                m_new['gandicap'] = v['gandicap'][0] 
             elif k in ["score", "quarters"]:
                 m_new[k] = v
-        print( f"{ind}/{len(old_matches)}")
+        print( f"{ind}/{len(old_matches)} {m['id']}")
         new_matches.append(m_new)
     with open(f"results.json", "w", newline='', encoding='utf-8') as fp:
         json.dump(new_matches , fp,  indent=4, ensure_ascii=False)         
