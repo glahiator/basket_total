@@ -53,7 +53,7 @@ def scrap_shedule_matches( ):
 
 def get_lifecycle():
     keeper = Storage()
-    # keeper.transit_to_results()
+    keeper.transit_to_results()
     # keeper.update_fixtures()
     keeper.get_today()
     # keeper.update_today()
@@ -85,6 +85,7 @@ def convert():
     with open(f"results.json", "w", newline='', encoding='utf-8') as fp:
         json.dump(new_matches , fp,  indent=4, ensure_ascii=False)         
     print(f"{ok} Save {len(new_matches)} matches.")
+
 
 
 def main(args):    
