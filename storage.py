@@ -53,16 +53,19 @@ class Storage():
     def transit_to_results(self):
         results = self.__load_file("results")
         today = self.__load_file("today")
+        error_matches = []
         for ind, m in enumerate( today, start=1 ):
             try:
                 curr = self.scrap.match_info(m["id"])
                 print(f"{ind} / {len(today)}")
                 results.append(self.__prepare_info(curr) )
             except Exception as e:
-                print(f"{warn}{warn}{warn}{warn}{warn}{warn}\nError {m} id")
+                print(f"{warn}{warn}{warn}{warn}{warn}{warn}\nError {m['id']} id")
+                error_matches.append(m["id"])
                 print(e)
 
         self.__save_file("results", results)
+        self.__save_file("../matches_id", error_matches)
         self.__clear_file("today")
 
     def __save_file( self, name, col ):

@@ -54,10 +54,8 @@ def scrap_shedule_matches( ):
 def get_lifecycle():
     keeper = Storage()
     keeper.transit_to_results()
-    # keeper.update_fixtures()
     keeper.get_today()
-    # keeper.update_today()
-    
+        
 
 def convert():
     old_matches = []
@@ -95,12 +93,14 @@ def main(args):
         scrap_all_matches_id_from_results()  
     elif args.mode == "shedule":
         get_lifecycle()
-        # convert()
+    elif args.mode == "update":
+        keeper = Storage()
+        keeper.update_fixtures()
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Scrapper modes select.')
-    parser.add_argument('mode', choices=['matches', "results", "shedule"])
+    parser.add_argument('mode', choices=['matches', "results", "shedule", "update"])
     args = parser.parse_args()       
     main(args)
     print("Finish")

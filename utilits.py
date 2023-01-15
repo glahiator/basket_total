@@ -7,7 +7,7 @@ info = emoji.emojize(":information:")
 
 def get_browser_options() :
     _options = webdriver.ChromeOptions()
-    _options.binary_location = r"C:\Program Files\Google\Chrome Beta\Application\chrome.exe"
+    _options.binary_location = r"C:\Program Files\Google\Chrome\Application\chrome.exe"
     _options.add_argument('--ignore-certificate-errors-spki-list')
     _options.add_argument('--ignore-ssl-errors')
     _options.add_argument('log-level=3')
