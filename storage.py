@@ -65,7 +65,8 @@ class Storage():
                 print(e)
 
         self.__save_file("results", results)
-        self.__save_file("../matches_id", error_matches)
+        if len(error_matches) != 0:
+            self.__save_file("../matches_id", error_matches)
         self.__clear_file("today")
 
     def __save_file( self, name, col ):
