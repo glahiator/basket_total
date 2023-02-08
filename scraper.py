@@ -7,11 +7,14 @@ from selenium.common.exceptions import NoSuchElementException
 from selenium import webdriver 
 from utilits import *
 from bs4 import BeautifulSoup
+import platform
 
 class BasketScraper(object):
     '''Need doc'''
     def __init__(self) -> None: 
         service = Service(executable_path="chromedriver.exe")
+        if platform.system() == "Linux":
+            service = Service(executable_path="./chromedriver")
         options = get_browser_options()     
         options.headless = True
         self.browser = webdriver.Chrome(service=service, options = options)   

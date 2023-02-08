@@ -1,5 +1,6 @@
 from selenium import webdriver  
 import emoji
+import platform
 
 ok = emoji.emojize(":check_mark:")
 warn = emoji.emojize(":red_exclamation_mark:")
@@ -7,7 +8,9 @@ info = emoji.emojize(":information:")
 
 def get_browser_options() :
     _options = webdriver.ChromeOptions()
-    _options.binary_location = r"C:\Program Files\Google\Chrome\Application\chrome.exe"
+
+    if platform.system() != "Linux":
+        _options.binary_location = r"C:\Program Files\Google\Chrome\Application\chrome.exe"
     _options.add_argument('--ignore-certificate-errors-spki-list')
     _options.add_argument('--ignore-ssl-errors')
     _options.add_argument('log-level=3')

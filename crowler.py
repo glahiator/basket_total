@@ -11,6 +11,20 @@ def scrap_all_matches_id_from_results( ) -> None:
     print(f"{ok} Save to file: matches.json {len(matches)} items")
 
 def scrap_match_info_from_file(  ) -> None:
+    def __prepare_info( m):
+        m_new = {}
+        for k,v in m.items():
+            if k in ["home", "away", "id"]:
+                m_new[k] = v
+            elif k == "odds":
+                m_new["odd_h"] = v["home"]
+                m_new["odd_a"] = v["away"]
+                m_new['total'] = v['total'][0]
+                m_new['gandicap'] = v['gandicap'][0]
+            elif k in ["quarters", "score", "date"]:
+                m_new[k] = v
+        return m_new
+
     scrap = BasketScraper()
     with open(f"matches_id.json", "r", newline='', encoding='utf-8') as fp:
         matches = json.load(fp)
@@ -22,6 +36,7 @@ def scrap_match_info_from_file(  ) -> None:
             mm = scrap.match_info(m)
             print(f"{index} / {len(matches)}")
             index += 1
+            mm = __prepare_info(mm)
             match_scrap.append(mm)
         except Exception as e:
             print(f"{warn}{warn}{warn}{warn}{warn}{warn}\nError {m} id")
