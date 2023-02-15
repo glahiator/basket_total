@@ -16,14 +16,17 @@ class BasketScraper(object):
         if platform.system() == "Linux":
             service = Service(executable_path="./chromedriver")
         options = get_browser_options()     
-        options.headless = True
-        self.browser = webdriver.Chrome(service=service, options = options)   
+        options.headless = False
+        options.add_argument('--ignore-certificate-errors-spki-list')
+        options.add_argument('--ignore-ssl-errors')
+        options.add_argument('--ignore-certificate-errors')
+        self.browser = webdriver.Chrome(service=service, chrome_options = options)   
     def __del__(self) -> None:
         pass
     
     def all_results_id(self):
         all_matches = []
-        url = "https://www.flashscore.ru.com/basketball/usa/nba/results/"
+        url = "https://www.flashscorekz.com/basketball/usa/nba/results/"
         self.browser.get(url)
         self.browser.set_page_load_timeout(11) 
         time.sleep(4) 
@@ -52,7 +55,7 @@ class BasketScraper(object):
             else:
                 prev_count = current_count
     def match_info(self, m_id) -> dict:
-        self.url = f"https://www.flashscore.ru.com/match/{m_id}"
+        self.url = f"https://www.flashscorekz.com/match/{m_id}"
         self.browser.get(self.url)
         self.browser.set_page_load_timeout(3) 
         time.sleep(3) 
@@ -88,7 +91,7 @@ class BasketScraper(object):
 
     def fixture_matches(self):
         all_matches = []
-        self.url = f"https://www.flashscore.ru.com/basketball/usa/nba/fixtures/"
+        self.url = f"https://www.flashscorekz.com/basketball/usa/nba/fixtures/"
         self.browser.get(self.url)
         self.browser.set_page_load_timeout(3) 
         time.sleep(5) 
@@ -99,7 +102,7 @@ class BasketScraper(object):
             all_matches.append(m.get('id')[4:] )
         return all_matches
     def today_match_info(self, m_id) ->dict:
-        self.url = f"https://www.flashscore.ru.com/match/{m_id}"
+        self.url = f"https://www.flashscorekz.com/match/{m_id}"
         self.browser.get(self.url)
         self.browser.set_page_load_timeout(3) 
         time.sleep(3) 

@@ -9,10 +9,12 @@ info = emoji.emojize(":information:")
 def get_browser_options() :
     _options = webdriver.ChromeOptions()
 
-    if platform.system() != "Linux":
-        _options.binary_location = r"C:\Program Files\Google\Chrome\Application\chrome.exe"
+    # if platform.system() != "Linux":
+    _options.binary_location = r"C:\Program Files\Google\Chrome\Application\chrome.exe"
     _options.add_argument('--ignore-certificate-errors-spki-list')
     _options.add_argument('--ignore-ssl-errors')
+    _options.add_argument('--ignore-certificate-errors')
+    
     _options.add_argument('log-level=3')
     _options.add_argument("--disable-blink-features=AutomationControlled")
 
