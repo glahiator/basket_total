@@ -68,7 +68,7 @@ def scrap_shedule_matches( ):
 
 def get_lifecycle():
     keeper = Storage()
-    keeper.tranjusit_to_results()
+    keeper.transit_to_results()
     keeper.get_today()
         
 
